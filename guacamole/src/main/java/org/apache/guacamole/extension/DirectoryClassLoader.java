@@ -19,17 +19,15 @@
 
 package org.apache.guacamole.extension;
 
+import org.apache.guacamole.GuacamoleException;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.guacamole.GuacamoleException;
 
 /**
  * A ClassLoader implementation which finds classes within .jar files within a
@@ -56,22 +54,7 @@ public class DirectoryClassLoader extends URLClassLoader {
     public static DirectoryClassLoader getInstance(final File dir)
             throws GuacamoleException {
 
-        try {
-            // Attempt to create singleton classloader which loads classes from
-            // all .jar's in the lib directory defined in guacamole.properties
-            return AccessController.doPrivileged(new PrivilegedExceptionAction<DirectoryClassLoader>() {
-
-                @Override
-                public DirectoryClassLoader run() throws GuacamoleException {
-                    return new DirectoryClassLoader(dir);
-                }
-
-            });
-        }
-
-        catch (PrivilegedActionException e) {
-            throw (GuacamoleException) e.getException();
-        }
+        return new DirectoryClassLoader(dir);
 
     }
 

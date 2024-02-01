@@ -1,7 +1,7 @@
 {
     "guacamoleVersion" : "*",
-    "name"             : "Guacamole Branding Example",
-    "namespace"        : "guacamole-branding-example",
+    "name"             : "Skyscraper Branding Example",
+    "namespace"        : "skyscraper-branding-example",
     
     "css" : [
         "css/0-font-raleway.css",

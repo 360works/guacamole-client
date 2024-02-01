@@ -19,28 +19,22 @@
 
 package org.apache.guacamole.extension;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * ClassLoader implementation which prioritizes the classes defined within a
@@ -102,25 +96,10 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     file cannot be read.
      */
     public static ExtensionClassLoader getInstance(final File extension,
-            final List<File> temporaryFiles, final ClassLoader parent)
+                                                   final List<File> temporaryFiles, final ClassLoader parent)
             throws GuacamoleException {
 
-        try {
-            // Attempt to create classloader which loads classes from the given
-            // .jar file
-            return AccessController.doPrivileged(new PrivilegedExceptionAction<ExtensionClassLoader>() {
-
-                @Override
-                public ExtensionClassLoader run() throws GuacamoleException {
-                    return new ExtensionClassLoader(extension, temporaryFiles, parent);
-                }
-
-            });
-        }
-
-        catch (PrivilegedActionException e) {
-            throw (GuacamoleException) e.getException();
-        }
+        return new ExtensionClassLoader(extension, temporaryFiles, parent);
 
     }
 
@@ -155,7 +134,7 @@ public class ExtensionClassLoader extends URLClassLoader {
     /**
      * Copies all bytes of data from a file within a .jar to a destination
      * file.
-     * 
+     *
      * @param jar
      *     The JarFile containing the file to be copied.
      *
@@ -187,7 +166,7 @@ public class ExtensionClassLoader extends URLClassLoader {
         }
 
     }
-    
+
     /**
      * Returns the URLs for the .jar files relevant to the given extension .jar
      * file. Unless the extension bundles additional Java libraries, only the
@@ -214,7 +193,7 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     be created.
      */
     private static URL[] getExtensionURLs(File extension,
-            List<File> temporaryFiles) throws GuacamoleException {
+                                          List<File> temporaryFiles) throws GuacamoleException {
 
         try (JarFile extensionJar = new JarFile(extension)) {
 
@@ -321,7 +300,7 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     file cannot be read.
      */
     private ExtensionClassLoader(File extension, List<File> temporaryFiles,
-            ClassLoader parent) throws GuacamoleException {
+                                 ClassLoader parent) throws GuacamoleException {
         super(getExtensionURLs(extension, temporaryFiles), null);
         this.parent = parent;
     }
